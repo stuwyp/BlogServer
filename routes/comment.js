@@ -1,30 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const blog_dao = require('../dao/blog_dao');
+const comment_dao = require('../dao/comment_dao');
 
 router.post('/', (req, res, next) => {
-    blog_dao.add_blog(req, res, next);
+    comment_dao.add_comment(req, res, next);
 });
 
 router.put('/:id', (req, res, next) => {
-    blog_dao.update_blog(req, res, next);
+    comment_dao.update_comment(req, res, next);
 });
 
 router.delete('/:id', (req, res, next) => {
-    blog_dao.delete_blog(req, res, next);
+    comment_dao.delete_comment(req, res, next);
 });
 
 
 router.get('/', (req, res, next) => {
-    blog_dao.get_all_blog(req, res, next);
+    comment_dao.get_all_comment(req, res, next);
 });
 
 router.get('/:id', (req, res, next) => {
-    blog_dao.get_blog_by_id(req, res, next);
-});
-
-router.get('/:id/comments', (req, res, next) => {
-    blog_dao.get_blog_comments_by_id(req, res, next);
+    comment_dao.get_comment_by_id(req, res, next);
 });
 
 //设置跨域访问

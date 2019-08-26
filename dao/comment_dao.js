@@ -1,9 +1,9 @@
-const {User} = require('./model')
+const {Comment} = require('./model')
 const QueryString = require("querystring");
 const {response} = require('../config/response')
 
 
-async function add_user(req, res) {
+async function add_comment(req, res) {
     let post_data = '';
     let ret_data = {};
 
@@ -14,18 +14,20 @@ async function add_user(req, res) {
         try {
             post_data = QueryString.parse(post_data);
             console.log(JSON.stringify(post_data));
-            let username = post_data['username'];
-            let password = post_data['password'];
-            let email = post_data['email'];
+            let content = post_data['content'];
             let created_at = post_data['created_at'];
             let updated_at = post_data['created_at'];
-            let is_admin = 1
-            let is_active = 1
-            let user = await User.create({
-                username, password, email, created_at, updated_at, is_admin, is_active
+            let state = 1
+            let blog_id = post_data['blog_id'];
+            let comment = await Comment.create({
+                content: content,
+                created_at: created_at,
+                updated_at: updated_at,
+                state: state,
+                blog_id: blog_id,
             })
-            console.log(JSON.stringify(user))
-            ret_data['id'] = user.id;
+            console.log(JSON.stringify(comment))
+            ret_data['id'] = comment.id;
             response(res, ret_data, 201);
         }
         catch (err) {
@@ -35,20 +37,20 @@ async function add_user(req, res) {
     })
 };
 
-async function delete_user(req, res) {
+async function delete_comment(req, res) {
     let ret_data = {};
     let id = req.params.id;
     if (id) {
         try {
-            let user = await User.destroy(
+            let comment = await Comment.destroy(
                 {
                     where: {
                         id: id
                     }
                 }
             )
-            console.log(JSON.stringify(user))
-            if (user > 0) {
+            console.log(JSON.stringify(comment))
+            if (comment > 0) {
                 response(res, ret_data, 200, -1);
             }
             else {
@@ -65,13 +67,13 @@ async function delete_user(req, res) {
     }
 };
 
-async function update_user(req, res) {
+async function update_comment(req, res) {
     let put_data = '';
     let ret_data = {};
-    let user_id = req.params.id;
+    let id = req.params.id;
     try {
-        let user = await User.findByPk(user_id)
-        if (user === null) {
+        let comment = await Comment.findByPk(id)
+        if (comment === null) {
             response(res, ret_data, 404);
             return
         }
@@ -88,24 +90,26 @@ async function update_user(req, res) {
         try {
             put_data = QueryString.parse(put_data);
             console.log(JSON.stringify(put_data));
-            let username = put_data['username'];
-            let password = put_data['password'];
-            let email = put_data['email'];
+            let content = put_data['content'];
             let created_at = put_data['created_at'];
             let updated_at = put_data['created_at'];
-            let is_admin = 1
-            let is_active = 1
-            let user = await User.update(
+            let state = 1
+            let blog_id = put_data['blog_id'];
+            let comment = await Comment.update(
                 {
-                    username, password, email, created_at, updated_at, is_admin, is_active, user_id,
+                    content: content,
+                    created_at: created_at,
+                    updated_at: updated_at,
+                    state: state,
+                    blog_id: blog_id,
                 },
                 {
                     where: {
-                        id: user_id
+                        id: id
                     }
                 })
-            console.log(JSON.stringify(user[0]))
-            if (user[0] > 0) {
+            console.log(JSON.stringify(comment[0]))
+            if (comment[0] > 0) {
                 response(res, ret_data, 200, 1);
             }
             else {
@@ -121,17 +125,17 @@ async function update_user(req, res) {
 
 };
 
-async function get_user_by_id(req, res) {
+async function get_comment_by_id(req, res) {
     let id = req.params.id;
     let ret_data = {};
     try {
-        let user = await User.findByPk(id)
-        if (user === null) {
+        let comment = await Comment.findByPk(id)
+        if (comment === null) {
             response(res, ret_data, 404);
         }
         else {
-            console.log(JSON.stringify(user))
-            ret_data['data'] = user;
+            console.log(JSON.stringify(comment))
+            ret_data['data'] = comment;
             response(res, ret_data, 200, 0);
         }
     }
@@ -141,14 +145,14 @@ async function get_user_by_id(req, res) {
     }
 }
 
-async function get_all_user(req, res) {
+async function get_all_comment(req, res) {
     let ret_data = {};
 
     try {
-        let user = await User.findAll()
-        // console.log(JSON.stringify(user))
-        ret_data['data'] = user;
-        ret_data['total'] = user.length
+        let comment = await Comment.findAll()
+        // console.log(JSON.stringify(comment))
+        ret_data['data'] = comment;
+        ret_data['total'] = comment.length
         ret_data['page'] = 1
         response(res, ret_data, 200, 0);
     }
@@ -158,32 +162,11 @@ async function get_all_user(req, res) {
     }
 }
 
-async function get_user_blogs_by_id(req, res) {
-    let id = req.params.id;
-    let ret_data = {};
-    try {
-        let user = await User.findByPk(id)
-        if (user === null) {
-            response(res, ret_data, 404);
-        }
-        else {
-            let blogs = await user.getBlogs()
-            console.log(JSON.stringify(blogs))
-            ret_data['data'] = blogs;
-            response(res, ret_data, 200, 0);
-        }
-    }
-    catch (err) {
-        console.log(err.message);
-        response(res, ret_data, 400);
-    }
-}
 
 module.exports = {
-    add_user,
-    update_user,
-    delete_user,
-    get_user_by_id,
-    get_all_user,
-    get_user_blogs_by_id
+    add_comment,
+    update_comment,
+    delete_comment,
+    get_comment_by_id,
+    get_all_comment
 };

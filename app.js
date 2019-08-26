@@ -6,6 +6,8 @@ const logger = require('morgan');
 
 const userRouter = require('./routes/user');
 const blogRouter = require('./routes/blog');
+const commentRouter = require('./routes/comment');
+
 
 const app = express();
 const cors = require('cors');
@@ -22,6 +24,7 @@ app.use(cors({credentials: true, origin: 'http://localhost:8000'}));
 
 app.use('/blog', blogRouter);
 app.use('/user', userRouter);
+app.use('/comment', commentRouter);
 
 // // catch 404 and forward to error handler
 // app.use(function (req, res, next) {

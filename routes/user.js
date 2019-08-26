@@ -23,6 +23,10 @@ router.get('/:id', (req, res, next) => {
     user_dao.get_user_by_id(req, res, next);
 });
 
+router.get('/:id/blogs', (req, res, next) => {
+    user_dao.get_user_blogs_by_id(req, res, next);
+});
+
 //设置跨域访问
 router.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
