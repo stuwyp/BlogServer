@@ -1,19 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const user_dao = require('../dao/user_dao');
-
-router.post('/', (req, res, next) => {
-    user_dao.add_user(req, res, next);
-});
-
-router.put('/:id', (req, res, next) => {
-    user_dao.update_user(req, res, next);
-});
-
-router.delete('/:id', (req, res, next) => {
-    user_dao.delete_user(req, res, next);
-});
-
+const blog_dao = require('../dao/blog_dao');
+const comment_dao = require('../dao/comment_dao');
 
 router.get('/', (req, res, next) => {
     user_dao.get_all_user(req, res, next);
@@ -24,7 +13,11 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.get('/:id/blogs', (req, res, next) => {
-    user_dao.get_user_blogs_by_id(req, res, next);
+    blog_dao.get_blogs_by_user_id(req, res, next);
+});
+
+router.get('/:id/comments', (req, res, next) => {
+    comment_dao.get_comments_by_user_id(req, res, next);
 });
 
 //设置跨域访问
@@ -37,4 +30,4 @@ router.all('*', function(req, res, next) {
     next();
 });
 
-module.exports = router;
+module.exports =router;

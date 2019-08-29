@@ -1,16 +1,25 @@
+
+// constant.js
+// 设置了密码盐值以及token的secretKey
+const crypto = require('crypto');
+
 module.exports = {
     environment: 'dev',
     mysql: {
         password: "123456",
-        database: "blog",
+        database: "test_blog",
         host: 'localhost',
-        port: 3306,
-        user: 'root'
+        username: 'root'
     },
     security: {
-        secretKey: "secretKey",
-        // 过期时间 1小时
-        expiresIn: 60 * 60
+        MD5_SUFFIX: 'no#thing$一个固定长度的盐值',
+        md5: (pwd) => {
+            let md5 = crypto.createHash('md5');
+            return md5.update(pwd).digest('hex');
+        },
+        secretKey: "no#thing$",
+        // // 过期时间 1小时
+        // expiresIn: 60 * 60
     },
     wx: {
         appId: '',

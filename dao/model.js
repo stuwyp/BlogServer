@@ -1,8 +1,8 @@
-const config = require('./config.js');
+const config = require('../config/config');
 const Sequelize = require('sequelize');
-
-let sequelize = new Sequelize(config.database, config.username, config.password, {
-    host: config.host,
+const mysql = config.mysql
+let sequelize = new Sequelize(mysql.database, mysql.username, mysql.password, {
+    host: mysql.host,
     dialect: 'mysql',
     pool: {
         max: 5,
@@ -18,136 +18,80 @@ let sequelize = new Sequelize(config.database, config.username, config.password,
 
 let Blog = sequelize.define('blog',
     {
-        id: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        title: {
-            type: Sequelize.STRING(100),
-            allowNull: false
-        },
-        content: Sequelize.TEXT,
-        description: Sequelize.STRING(255),
-        created_at: Sequelize.DATE,
-        updated_at: Sequelize.DATE,
-        state: Sequelize.SMALLINT
+        id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+        title: {type: Sequelize.STRING(100), allowNull: false},
+        content: {type: Sequelize.TEXT, allowNull: false},
+        description: {type: Sequelize.STRING(255), allowNull: true},
+        state: {type: Sequelize.SMALLINT, allowNull: false, defaultValue: 1},
+        created_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
+        updated_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
     },
-    {
-        timestamps: false,
-        freezeTableName: true,
-        underscored: true,
-    });
+    {timestamps: false, freezeTableName: true, underscored: true});
 
 
 let User = sequelize.define('user',
     {
-        id: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        username: Sequelize.STRING(100),
-        password: Sequelize.STRING(100),
-        email: Sequelize.STRING(100),
-        created_at: Sequelize.DATE,
-        updated_at: Sequelize.DATE,
-        is_admin: Sequelize.SMALLINT,
-        is_active: Sequelize.SMALLINT
+        id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+        avatar: {type: Sequelize.STRING(255)},
+        username: {type: Sequelize.STRING(100), allowNull: false, unique: true},
+        password: {type: Sequelize.STRING(100), allowNull: false},
+        email: {type: Sequelize.STRING(100), allowNull: false, unique: true},
+        token: {type: Sequelize.STRING(255), unique: true},
+        is_admin: {type: Sequelize.SMALLINT, allowNull: false, defaultValue: 0},
+        is_active: {type: Sequelize.SMALLINT, allowNull: false, defaultValue: 1},
+        created_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
+        updated_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
     },
-    {
-        timestamps: false,
-        freezeTableName: true,
-        underscored: true,
-    });
+    {timestamps: false, freezeTableName: true, underscored: true});
 
 
 let Comment = sequelize.define('comment',
     {
-        id: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        content: Sequelize.STRING(100),
-        created_at: Sequelize.DATE,
-        updated_at: Sequelize.DATE,
-        state: Sequelize.SMALLINT
+        id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+        content: {type: Sequelize.STRING(100), allowNull: false},
+        state: {type: Sequelize.SMALLINT, allowNull: false, defaultValue: 1},
+        created_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
+        updated_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
+
     },
-    {
-        timestamps: false,
-        freezeTableName: true,
-        underscored: true,
-    });
+    {timestamps: false, freezeTableName: true, underscored: true});
 
 
 let Tag = sequelize.define('tag',
     {
-        id: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        name: Sequelize.STRING(100),
-        created_at: Sequelize.DATE,
-        updated_at: Sequelize.DATE,
-        state: Sequelize.SMALLINT
+        id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+        name: {type: Sequelize.STRING(100), allowNull: false},
+        state: {type: Sequelize.SMALLINT, allowNull: false, defaultValue: 1},
+        created_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
+        updated_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
     },
-    {
-        timestamps: false,
-        freezeTableName: true,
-        underscored: true,
-    });
+    {timestamps: false, freezeTableName: true, underscored: true});
 
 
 let Category = sequelize.define('category',
     {
-        id: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        name: Sequelize.STRING(100),
-        key: Sequelize.STRING(100),
-        created_at: Sequelize.DATE,
-        updated_at: Sequelize.DATE,
+        id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+        name: {type: Sequelize.STRING(100), allowNull: false},
+        key: {type: Sequelize.STRING(100), allowNull: false},
+        created_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
+        updated_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
         state: Sequelize.SMALLINT
     },
-    {
-        timestamps: false,
-        freezeTableName: true,
-        underscored: true,
-    });
+    {timestamps: false, freezeTableName: true, underscored: true});
+
 
 let BlogTag = sequelize.define('blog_tag',
-    {
-        id: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        }
-    },
-    {
-        timestamps: false,
-        freezeTableName: true,
-        underscored: true,
-    })
+    {id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},},
+    {timestamps: false, freezeTableName: true, underscored: true});
+
 
 let BlogCategory = sequelize.define('blog_category',
-    {
-        id: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        }
-    },
-    {
-        timestamps: false,
-        freezeTableName: true,
-        underscored: true,
-    })
+    {id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},},
+    {timestamps: false, freezeTableName: true, underscored: true});
+
 
 User.hasMany(Blog, {foreignKey: 'user_id', onDelete: 'CASCADE'})
+User.hasMany(Comment, {foreignKey: 'user_id', onDelete: 'CASCADE'})
 Blog.hasMany(Comment, {foreignKey: 'blog_id', onDelete: 'CASCADE'})
 
 Tag.belongsToMany(Blog, {through: 'blog_tag'});
@@ -165,5 +109,5 @@ module.exports = {
     Tag,
     Category,
     BlogCategory,
-    BlogTag
+    BlogTag,
 }
