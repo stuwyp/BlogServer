@@ -1,5 +1,4 @@
 const {User} = require('./model')
-const QueryString = require("querystring")
 const {response} = require('./response')
 const jwt = require('jsonwebtoken')
 const {security} = require('../config/config')

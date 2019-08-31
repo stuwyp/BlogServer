@@ -60,7 +60,7 @@ let Comment = sequelize.define('comment',
 let Tag = sequelize.define('tag',
     {
         id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
-        name: {type: Sequelize.STRING(100), allowNull: false},
+        name: {type: Sequelize.STRING(100), allowNull: false, unique: true},
         state: {type: Sequelize.SMALLINT, allowNull: false, defaultValue: 1},
         created_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
         updated_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
@@ -85,20 +85,17 @@ let BlogTag = sequelize.define('blog_tag',
     {timestamps: false, freezeTableName: true, underscored: true});
 
 
-let BlogCategory = sequelize.define('blog_category',
-    {id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},},
-    {timestamps: false, freezeTableName: true, underscored: true});
 
 
 User.hasMany(Blog, {foreignKey: 'user_id', onDelete: 'CASCADE'})
 User.hasMany(Comment, {foreignKey: 'user_id', onDelete: 'CASCADE'})
 Blog.hasMany(Comment, {foreignKey: 'blog_id', onDelete: 'CASCADE'})
+Category.hasMany(Blog,{foreignKey: 'category_id', onDelete: 'CASCADE'})
 
 Tag.belongsToMany(Blog, {through: 'blog_tag'});
 Blog.belongsToMany(Tag, {through: 'blog_tag'});
 
-Category.belongsToMany(Blog, {through: 'blog_category'});
-Blog.belongsToMany(Category, {through: 'blog_category'});
+
 
 sequelize.sync()
 
@@ -108,6 +105,5 @@ module.exports = {
     Comment,
     Tag,
     Category,
-    BlogCategory,
     BlogTag,
 }

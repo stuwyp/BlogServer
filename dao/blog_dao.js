@@ -1,30 +1,53 @@
-const {Blog,User} = require('./model')
+const {Blog, User, Tag, BlogTag} = require('./model')
 const {response} = require('./response')
-
+const {add_tag_intern} = require('./tag_dao')
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op
 
 async function add_blog(req, res) {
     let ret_data = {};
     let post_data = req.body;
-    console.log(JSON.stringify(post_data));
+    // console.log(JSON.stringify(post_data));
+    let tags = JSON.parse(post_data['tags'])
+    // console.log(typeof tags)
+    if (!Array.isArray(tags)) {
+        tags = [tags]
+    }
+
     let title = post_data['title'];
     let content = post_data['content'];
     let description = post_data['description'];
-    // let category_id = 1;
-    let created_at = post_data['created_at'];
-    let updated_at = post_data['created_at'];
+    let time = new Date();
+    let created_at = time
+    let updated_at = time
     let state = 1
     let user_id = post_data['user_id'];
     try {
+        let tag_id_list = []
+        for (let tag of tags) {
+            let tagQuery = await Tag.findOne({
+                where: {
+                    name: tag
+                }
+            })
+            if (tagQuery === null) {
+                let tagAdd = await add_tag_intern(tag)
+                tag_id_list.push(tagAdd.dataValues.id)
+                // console.log(tag_id_list)
+            }
+            else {
+                tag_id_list.push(tagQuery.id)
+                // console.log(tag_id_list)
+            }
+        }
+
         let blog = await Blog.create({
-            title: title,
-            content: content,
-            description: description,
-            created_at: created_at,
-            updated_at: updated_at,
-            state: state,
-            user_id: user_id,
+            title, content, description, created_at, updated_at, state, user_id,
         })
-        console.log(JSON.stringify(blog))
+        for (let tag_id of tag_id_list) {
+            blog.setTags(tag_id)
+        }
+        // console.log(JSON.stringify(blog))
         ret_data['id'] = blog.id;
         response(res, ret_data, 201);
     }
@@ -123,6 +146,86 @@ async function update_blog(req, res) {
 
 }
 
+async function get_all_blog(req, res) {
+    let ret_data = {};
+    let currentPage = parseInt(req.query.page) || 1
+    let filterTags = req.query.tag || []
+    let queryResult = null
+    let pageCount = 0
+    let sortBy = 'updated_at'
+    if (!Array.isArray(filterTags)) {
+        filterTags = [filterTags]
+    }
+
+    try {
+        let countPerPage = 10
+        if (currentPage <= 0)
+            currentPage = 1
+        if (filterTags.length === 0) {
+            console.log(countPerPage,countPerPage*(currentPage-1))
+            queryResult = await Blog.findAndCountAll({
+                limit: countPerPage, // 每页多少条
+                offset: countPerPage * (currentPage - 1), // 跳过多少条
+                order: [
+                    [sortBy, 'DESC']
+                ],
+                distinct:true,
+                include: [{
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: {
+                        attributes: [],
+                    },
+                }],
+            })
+        }
+        else {
+            let result = await BlogTag.findAll({
+                where: {
+                    tag_id: {
+                        [Op.in]: filterTags
+                    }
+                },
+                attributes: ['blog_id'],
+                group: 'blog_id'
+            })
+
+            let blogList = result.map(i => i.dataValues.blog_id)
+
+            queryResult = await Blog.findAndCountAll({
+                include: [{
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: {
+                        attributes: [],
+                    }
+                }],
+                where: {
+                    id: {
+                        [Op.in]: blogList
+                    }
+                },
+                limit: countPerPage, // 每页多少条
+                offset: countPerPage * (currentPage - 1), // 跳过多少条
+                order: [
+                    [sortBy, 'DESC']
+                ],
+            })
+        }
+
+        pageCount = Math.ceil(queryResult.count / countPerPage)
+        ret_data['data'] = queryResult.rows
+        ret_data['total'] = queryResult.count
+        ret_data['page'] = currentPage
+        ret_data['pageCount'] = pageCount
+        response(res, ret_data, 200, 0);
+    }
+    catch (err) {
+        console.log(err.message);
+        response(res, ret_data, 400);
+    }
+}
+
 async function get_blog_by_id(req, res) {
     let id = req.params.id;
     let ret_data = {};
@@ -143,25 +246,80 @@ async function get_blog_by_id(req, res) {
     }
 }
 
-async function get_all_blog(req, res) {
+async function get_blogs_by_user_id(req, res) {
+    let id = req.params.id;
     let ret_data = {};
+
     let currentPage = parseInt(req.query.page) || 1
+    let filterTags = req.query.tag || []
+    let queryResult = null
+    let pageCount = 0
+    let sortBy = 'updated_at'
+    if (!Array.isArray(filterTags)) {
+        filterTags = [filterTags]
+    }
     try {
         let countPerPage = 10
         if (currentPage <= 0)
             currentPage = 1
-        let queryResult = await Blog.findAndCountAll({
-            limit: countPerPage, // 每页多少条
-            offset: countPerPage * (currentPage - 1), // 跳过多少条
-            order: [
-                ['updated_at', 'DESC']
-            ]
-        })
+        if (filterTags.length === 0) {
+            queryResult = await Blog.findAndCountAll({
+                limit: countPerPage, // 每页多少条
+                offset: countPerPage * (currentPage - 1), // 跳过多少条
+                order: [
+                    [sortBy, 'DESC']
+                ],
+                distinct:true,
+                include: [{
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: {
+                        attributes: [],
+                    }
+                }],
+                where: {
+                    user_id: id
+                }
+            })
+        }
+        else {
+            let result = await BlogTag.findAll({
+                where: {
+                    tag_id: {
+                        [Op.in]: filterTags
+                    }
+                },
+                attributes: ['blog_id'],
+                group: 'blog_id'
+            })
 
-        let pageCount = Math.ceil(queryResult.count / countPerPage)
+            let blogList = result.map(i => i.dataValues.blog_id)
 
+            queryResult = await Blog.findAndCountAll({
+                include: [{
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: {
+                        attributes: [],
+                    }
+                }],
+                where: {
+                    id: {
+                        [Op.in]: blogList
+                    },
+                    user_id: id
+                },
+                limit: countPerPage, // 每页多少条
+                offset: countPerPage * (currentPage - 1), // 跳过多少条
+                order: [
+                    [sortBy, 'DESC']
+                ],
+            })
+        }
+
+        pageCount = Math.ceil(queryResult.count / countPerPage)
         ret_data['data'] = queryResult.rows
-        ret_data['total'] = queryResult.count
+        ret_data['total'] = queryResult.count - 1
         ret_data['page'] = currentPage
         ret_data['pageCount'] = pageCount
         response(res, ret_data, 200, 0);
@@ -172,16 +330,16 @@ async function get_all_blog(req, res) {
     }
 }
 
-async function get_blogs_by_user_id(req, res) {
+async function get_blogs_by_tag_id(req, res) {
     let id = req.params.id;
     let ret_data = {};
     try {
-        let user = await User.findByPk(id)
-        if (user === null) {
+        let tag = await Tag.findByPk(id)
+        if (tag === null) {
             response(res, ret_data, 404);
         }
         else {
-            let blogs = await user.getBlogs()
+            let blogs = await tag.getBlogs()
             console.log(JSON.stringify(blogs))
             ret_data['data'] = blogs;
             response(res, ret_data, 200, 0);
@@ -199,5 +357,6 @@ module.exports = {
     delete_blog,
     get_blog_by_id,
     get_all_blog,
-    get_blogs_by_user_id
+    get_blogs_by_user_id,
+    get_blogs_by_tag_id
 };

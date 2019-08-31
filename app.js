@@ -1,21 +1,21 @@
-const createError = require('http-errors');
+// const createError = require('http-errors');
 const express = require('express');
-const path = require('path');
+// const path = require('path');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+// const cookieParser = require('cookie-parser');
+// const logger = require('morgan');
 
 const indexRouter = require('./routes/index')
 const userRouter = require('./routes/user');
 const authRouter = require('./routes/auth')
 const blogRouter = require('./routes/blog');
 const commentRouter = require('./routes/comment');
-
+const tagRouter = require('./routes/tag')
 
 const app = express();
 const cors = require('cors');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cors({credentials: true, origin: 'http://localhost:8000'}));
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
@@ -30,7 +30,7 @@ app.use('/blog', blogRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/comment', commentRouter);
-
+app.use('/tag', tagRouter)
 app.use(function (err, req, res, next) {
     console.log(err)
     if (err.name === 'UnauthorizedError') {
