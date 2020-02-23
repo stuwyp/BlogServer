@@ -3,7 +3,7 @@ const {response} = require('./response')
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op
 
-async function globalSearchBlogs(req, res) {
+async function global_search_blogs(req, res) {
     let keyword = req.query.key;
     let currentPage = parseInt(req.query.page) || 1
     let ret_data = {};
@@ -53,6 +53,5 @@ async function globalSearchBlogs(req, res) {
 }
 
 module.exports = {
-    globalSearchBlogs,
-
+    global_search_blogs
 }
