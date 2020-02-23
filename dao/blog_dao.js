@@ -1,4 +1,4 @@
-const {Blog, User, Tag, BlogTag} = require('./model')
+const {Blog, User, Tag, BlogTag} = require('../model/model')
 const {response} = require('./response')
 const {add_tag_intern} = require('./tag_dao')
 const Sequelize = require('sequelize')
@@ -29,7 +29,7 @@ async function add_blog(req, res) {
 
     let title = post_data['title']
     let content = post_data['content']
-    let description = post_data['description']
+    let desc = post_data['desc']
     let time = new Date()
     let created_at = time
     let updated_at = time
@@ -55,7 +55,7 @@ async function add_blog(req, res) {
         }
 
         let blog = await Blog.create({
-            title, content, description, created_at, updated_at, state, user_id,
+            title, content, desc, created_at, updated_at, state, user_id,
         })
         for (let tag_id of tag_id_list) {
             blog.setTags(tag_id)
@@ -313,11 +313,11 @@ async function update_blog(req, res) {
 
     let title = put_data['title']
     let content = put_data['content']
-    let description = put_data['description']
+    let desc = put_data['desc']
     let created_at = put_data['created_at']
     let updated_at = put_data['created_at']
     let obj = {
-        title, content, description, created_at, updated_at
+        title, content, desc, created_at, updated_at
     }
     let result = await update_blog_attrs_by_id(id, obj)
     if (result.status === 1)

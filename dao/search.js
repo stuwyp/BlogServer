@@ -1,4 +1,4 @@
-const {Blog, User} = require('./model')
+const {Blog, User} = require('../model/model')
 const {response} = require('./response')
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op
@@ -23,7 +23,7 @@ async function global_search_blogs(req, res) {
                     title: {
                         [Op.like]: '%' + keyword + '%'
                     },
-                    description: {
+                    desc: {
                         [Op.like]: '%' + keyword + '%'
                     },
                 }

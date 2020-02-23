@@ -1,4 +1,4 @@
-const {Tag, User} = require('./model')
+const {Tag, User} = require('../model/model')
 const {response} = require('./response')
 
 async function add_tag_intern(name) {

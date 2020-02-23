@@ -1,4 +1,4 @@
-const {BlogTag} = require('./model')
+const {BlogTag} = require('../model/model')
 
 async function add_blog_tag(tag_id, blog_id) {
     console.log(tag_id, blog_id)

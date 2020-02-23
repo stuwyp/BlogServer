@@ -1,4 +1,4 @@
-const {User} = require('./model')
+const {User} = require('../model/model')
 const {response} = require('./response')
 const jwt = require('jsonwebtoken')
 const {security} = require('../config/config')

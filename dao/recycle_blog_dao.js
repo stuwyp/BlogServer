@@ -1,4 +1,4 @@
-const {Blog, Tag} = require('./model')
+const {Blog, Tag} = require('../model/model')
 const {response} = require('./response')
 
 

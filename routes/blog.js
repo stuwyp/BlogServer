@@ -4,6 +4,7 @@ const blog_dao = require('../dao/blog_dao');
 const comment_dao = require('../dao/comment_dao')
 const recycle_blog_dao = require('../dao/recycle_blog_dao')
 const search_dao = require('../dao/search')
+
 router.get('/', (req, res, next) => {
     blog_dao.get_all_blog(req, res, next);
 });
