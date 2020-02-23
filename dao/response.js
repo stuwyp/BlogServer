@@ -1,4 +1,4 @@
-response = (res, ret_data, code, kind) => {
+response = (res, ret_data, code, kind,msg) => {
     switch (code) {
         case 404:
             ret_data['code'] = 40004
@@ -10,7 +10,7 @@ response = (res, ret_data, code, kind) => {
             break;
         case 400:
             ret_data['code'] = 40000
-            ret_data['errMsg'] = 'Request error';
+            ret_data['errMsg'] = msg ||'Request error';
             break;
         case 201:
             ret_data['code'] = 20001
