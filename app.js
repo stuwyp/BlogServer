@@ -13,10 +13,11 @@ const commentRouter = require('./routes/comment');
 const tagRouter = require('./routes/tag')
 
 const app = express();
-const cors = require('cors');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(cors({credentials: true, origin: 'http://localhost:8000'}));
+const cors = require('cors');
+app.use(cors({credentials: true, origin: ['http://localhost:8000', 'http://localhost:8090']}));
+
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'pug');

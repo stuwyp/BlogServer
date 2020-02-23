@@ -9,7 +9,8 @@ const jwtAuth = expressJwt({secret: security.secretKey}).unless({
         {url: '/blog', methods: ['GET']},
         {url: /^\/blog\/.*/, methods: ['GET']},
         {url: '/tag', methods: ['GET']},
-        // {url: '/blog', methods: ['POST']},
+        {url: '/blog', methods: ['POST']},
+        {url: /^\/blog\/.*/, methods: ['PUT']},
     ]
 });
 
