@@ -1,31 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const tag_dao = require('../dao/tag_dao');
-const blog_tao = require('../dao/blog_dao')
+const cate = require('../service/cate');
+const blog = require('../service/blog')
 
 router.post('/', (req, res, next) => {
-    tag_dao.add_tag(req, res, next);
+    cate.add_cate(req, res, next);
 });
 
 router.put('/:id', (req, res, next) => {
-    tag_dao.update_tag(req, res, next);
+    cate.update_cate(req, res, next);
 });
 
 router.delete('/:id', (req, res, next) => {
-    tag_dao.delete_tag(req, res, next);
+    cate.delete_cate(req, res, next);
 });
 
 
 router.get('/', (req, res, next) => {
-    tag_dao.get_all_tag(req, res, next);
+    cate.get_all_cate(req, res, next);
 });
 
 router.get('/:id', (req, res, next) => {
-    tag_dao.get_tag_by_id(req, res, next);
+    cate.get_cate_by_id(req, res, next);
 });
 
 router.get('/:id/blogs', (req, res, next) => {
-    blog_tao.get_blogs_by_tag_id(req, res, next);
+    blog.get_blogs_by_cate_id(req, res, next);
 });
 
 //设置跨域访问
