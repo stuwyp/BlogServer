@@ -1,4 +1,4 @@
-const {Tag, User} = require('../model/model')
+const {Tag, User} = require('../model/db')
 const {response} = require('./response')
 
 async function add_tag_intern(name) {
@@ -16,9 +16,10 @@ async function add_tag_intern(name) {
 
 async function add_tag(req, res) {
     let ret_data = {};
-    let post_data = req.body;
-    let name = post_data['name'];
-    let state = post_data['state'] || 1;
+
+    let {name, state} = req.body;
+    state = state || 1;
+
     let time = new Date();
     let created_at = time
     let updated_at = time
@@ -27,7 +28,7 @@ async function add_tag(req, res) {
         let tag = await Tag.create({
             name, state, created_at, updated_at,
         })
-        console.log(JSON.stringify(tag))
+        // console.log(JSON.stringify(tag))
         ret_data['id'] = tag.id;
         response(res, ret_data, 201);
     }
@@ -84,11 +85,8 @@ async function update_tag(req, res) {
         return
     }
 
+    let {name, state} = req.body
 
-    let put_data = req.body
-    console.log(JSON.stringify(put_data));
-    let name = put_data['name'];
-    let state = put_data['state'];
     let time = new Date();
     let updated_at = time
     try {
@@ -99,7 +97,7 @@ async function update_tag(req, res) {
                     id: id
                 }
             })
-        console.log(JSON.stringify(tag[0]))
+        // console.log(JSON.stringify(tag[0]))
         if (tag[0] > 0) {
             response(res, ret_data, 200, 1);
         }
@@ -123,7 +121,7 @@ async function get_tag_by_id(req, res) {
             response(res, ret_data, 404);
         }
         else {
-            console.log(JSON.stringify(tag))
+            // console.log(JSON.stringify(tag))
             ret_data['data'] = tag;
             response(res, ret_data, 200, 0);
         }

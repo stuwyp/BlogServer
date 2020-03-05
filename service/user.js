@@ -1,4 +1,4 @@
-const {User} = require('../model/model')
+const {User} = require('../model/db')
 const {response} = require('./response')
 const jwt = require('jsonwebtoken')
 const {security} = require('../config/config')
@@ -14,7 +14,7 @@ async function get_info(req, res) {
             console.log(err)
             response(res, ret_data, 401)
         }
-        console.log(decoded)
+        // console.log(decoded)
         username = decoded.username
     })
 
@@ -47,11 +47,8 @@ async function get_info(req, res) {
 
 async function add_user(req, res) {
     let ret_data = {}
-    let post_data = req.body
-    console.log(JSON.stringify(post_data))
-    let username = post_data['username']
-    let password = post_data['password']
-    let email = post_data['email']
+    let {username, password, email} = req.body
+
     let time = new Date();
     let created_at = time
     let updated_at = time
@@ -66,7 +63,7 @@ async function add_user(req, res) {
         let user = await User.create({
             username, password: encryptPass, email, token, created_at, updated_at, is_admin, is_active
         })
-        console.log(JSON.stringify(user))
+        // console.log(JSON.stringify(user))
         ret_data['id'] = user.id
         response(res, ret_data, 201)
         console.log('ok')
@@ -96,11 +93,7 @@ async function update_user(req, res) {
         return
     }
 
-    let put_data = req.body
-    console.log(JSON.stringify(put_data))
-    let username = put_data['username']
-    let password = put_data['password']
-    let email = put_data['email']
+    let {username, password, email} = req.body
     let token = 1
     let created_at = put_data['created_at']
     let updated_at = put_data['created_at']
@@ -117,7 +110,7 @@ async function update_user(req, res) {
                     id: user_id
                 }
             })
-        console.log(JSON.stringify(user[0]))
+        // console.log(JSON.stringify(user[0]))
         if (user[0] > 0) {
             response(res, ret_data, 200, 1)
         }
@@ -140,7 +133,7 @@ async function get_user_by_id(req, res) {
             response(res, ret_data, 404)
         }
         else {
-            console.log(JSON.stringify(user))
+            // console.log(JSON.stringify(user))
             ret_data['data'] = user
             response(res, ret_data, 200, 0)
         }
@@ -226,7 +219,7 @@ async function delete_user(req, res) {
                     }
                 }
             )
-            console.log(JSON.stringify(user))
+            // console.log(JSON.stringify(user))
             if (user > 0) {
                 response(res, ret_data, 200, -1)
             }

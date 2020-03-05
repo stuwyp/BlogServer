@@ -1,33 +1,25 @@
-const {Comment, Blog, User} = require('../model/model')
+const {Comment, Blog, User} = require('../model/db')
 const {response} = require('./response')
 
 
 async function add_comment(req, res) {
     let ret_data = {}
-    let post_data = req.body
-    let content = post_data['content']
-    let blog_id = post_data['blog_id']
-    let user_id = post_data['user_id']
-    let state = 1
+    let {content, blog_id, user_id} = req.body
+    // let state = 1
     let time = new Date()
     let created_at = time
     let updated_at = time
-    console.log(content,
-        created_at,
-        updated_at,
-        state,
-        blog_id,
-        user_id)
+
     try {
         let comment = await Comment.create({
             content,
             created_at,
             updated_at,
-            state,
+            // state,
             blog_id,
             user_id
         })
-        console.log(JSON.stringify(comment))
+        // console.log(JSON.stringify(comment))
         ret_data['id'] = comment.id
         response(res, ret_data, 201)
     }
@@ -43,14 +35,11 @@ async function delete_comment(req, res) {
     let id = req.params.id
     if (id) {
         try {
-            let comment = await Comment.destroy(
-                {
-                    where: {
-                        id: id
-                    }
+            let comment = await Comment.destroy({
+                    where: {id}
                 }
             )
-            console.log(JSON.stringify(comment))
+            // console.log(JSON.stringify(comment))
             if (comment > 0) {
                 response(res, ret_data, 200, -1)
             }
@@ -84,22 +73,15 @@ async function update_comment(req, res) {
         return
     }
 
-    let put_data = req.body
-    console.log(JSON.stringify(put_data))
-    let content = put_data['content']
-    let created_at = put_data['created_at']
-    let updated_at = put_data['created_at']
-    let state = 1
-    let blog_id = put_data['blog_id']
-    let user_id = put_data['user_id']
-
+    let {content, created_at, updated_at, blog_id, user_id} = req.body
+    // let state = 1
     try {
         let comment = await Comment.update(
             {
                 content,
                 created_at,
                 updated_at,
-                state,
+                // state,
                 blog_id,
                 user_id,
             },
@@ -108,7 +90,7 @@ async function update_comment(req, res) {
                     id: id
                 }
             })
-        console.log(JSON.stringify(comment[0]))
+        // console.log(JSON.stringify(comment[0]))
         if (comment[0] > 0) {
             response(res, ret_data, 200, 1)
         }
@@ -132,7 +114,7 @@ async function get_comment_by_id(req, res) {
             response(res, ret_data, 404)
         }
         else {
-            console.log(JSON.stringify(comment))
+            // console.log(JSON.stringify(comment))
             ret_data['data'] = comment
             response(res, ret_data, 200, 0)
         }
@@ -169,9 +151,7 @@ async function get_comments_by_user_id(req, res) {
             response(res, ret_data, 404)
         }
         else {
-            let comments = await user.getComments()
-            console.log(JSON.stringify(comments))
-            ret_data['data'] = comments
+            ret_data['data'] = await user.getComments()
             response(res, ret_data, 200, 0)
         }
     }
@@ -207,7 +187,7 @@ async function get_comments_by_blog_id(req, res) {
                 else if (currentPage <= 0)
                     currentPage = 1
                 let comments = await blog.getComments({
-                    attributes: ['id', 'content', 'created_at', 'updated_at', 'state'],
+                    attributes: ['id', 'content', 'created_at', 'updated_at'],
                     distinct: true,
                     include: include,
                     limit: countPerPage, // 每页多少条
@@ -231,8 +211,6 @@ async function get_comments_by_blog_id(req, res) {
                     'page': 1
                 }
             }
-
-
             response(res, ret_data, 200, 0)
         }
     }

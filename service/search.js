@@ -1,4 +1,4 @@
-const {Blog, User} = require('../model/model')
+const {Blog, User} = require('../model/db')
 const {response} = require('./response')
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op
