@@ -19,7 +19,7 @@ let Category = sql.define('category',
 
         updated_at: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW},
 
-        state: Sequelize.SMALLINT
+        state: {type: Sequelize.INTEGER, allowNull: false, defaultValue: 1}
     },
     {
         timestamps: false,

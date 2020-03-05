@@ -18,9 +18,6 @@ let User = sql.define('user',
 
         password: {type: Sequelize.STRING(100), allowNull: false},
 
-        //用户类型 0：博主，1：其他用户 ，2：github， 3：weixin， 4：qq ( 0，1 是注册的用户； 2，3，4 都是第三方授权登录的用户)
-        type: { type: Sequelize.SMALLINT, allowNull: false, defaultValue: 1},
-
         email: {type: Sequelize.STRING(100), allowNull: false, unique: true},
 
         token: {type: Sequelize.STRING(255), unique: true},
